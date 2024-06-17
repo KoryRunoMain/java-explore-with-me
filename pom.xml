@@ -12,10 +12,10 @@
 
 	<name>Explore With Me</name>
     <modules>
-        <module>stat-service</module>
-        <module>stat-service/stat-client</module>
-        <module>stat-service/stats-server</module>
-		<module>stat-service/stat-dto</module>
+        <module>ewm-stat-service</module>
+        <module>ewm-stat-service/stat-client</module>
+        <module>ewm-stat-service/stat-service</module>
+		<module>ewm-stat-service/stat-dto</module>
         <module>ewm-service</module>
     </modules>
 
@@ -63,7 +63,8 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>10.3</version>
+<!--							<version>10.3</version> в шаблоне стояла эта версия-->
+							<version>10.15.0</version>
 						</dependency>
 					</dependencies>
 				</plugin>

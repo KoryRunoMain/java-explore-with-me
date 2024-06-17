@@ -13,10 +13,10 @@
     <modules>
         <module>stat-client</module>
         <module>stat-dto</module>
-        <module>stats-server</module>
+        <module>stat-service</module>
     </modules>
 
-    <artifactId>stat-service</artifactId>
+    <artifactId>ewm-stat-service</artifactId>
 
     <dependencies>
         <dependency>

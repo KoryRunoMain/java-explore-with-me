@@ -1,4 +1,4 @@
-package ru.practicum.endpointHit.model;
+package ru.practicum.statistic.model;
 
 import lombok.Builder;
 import lombok.Getter;
