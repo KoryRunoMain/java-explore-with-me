@@ -29,7 +29,7 @@ public class StatsController {
     @GetMapping("/stat")
     @ResponseStatus(HttpStatus.OK)
     public List<ViewStatDto> getStats(@RequestParam String start, @RequestParam String end,
-                                      @RequestParam(required = false) String [] uris,
+                                      @RequestParam(required = false) List<String> uris,
                                       @RequestParam(defaultValue = "false") boolean unique) {
         log.info("Get-request, getStats=params: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         return service.getStats(start, end, uris, unique);

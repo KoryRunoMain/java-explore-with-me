@@ -8,6 +8,6 @@ public interface StatService {
 
     void addHit(EndpointHitDto hitDto);
 
-    List<ViewStatDto> getStats(String start, String end, String[] uris, boolean unique);
+    List<ViewStatDto> getStats(String start, String end, List<String> uris, boolean unique);
 
 }

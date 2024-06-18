@@ -16,7 +16,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public List<ViewStatDto> getStats(String start, String end, String[] uris, boolean unique) {
+    public List<ViewStatDto> getStats(String start, String end, List<String> uris, boolean unique) {
         return null;
     }
 
