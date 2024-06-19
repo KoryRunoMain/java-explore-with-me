@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class ViewStats {
+public class ViewStat {
 
     private String app;
     private String uri;

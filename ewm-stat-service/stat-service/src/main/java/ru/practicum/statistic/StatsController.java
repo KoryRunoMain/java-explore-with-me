@@ -2,6 +2,7 @@ package ru.practicum.statistic;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public class StatsController {
 
     @GetMapping("/stat")
     @ResponseStatus(HttpStatus.OK)
-    public List<ViewStatDto> getStats(@RequestParam String start, @RequestParam String end,
+    public Page<ViewStatDto> getStats(@RequestParam String start, @RequestParam String end,
                                       @RequestParam(required = false) List<String> uris,
                                       @RequestParam(defaultValue = "false") boolean unique) {
         log.info("Get-request, getStats=params: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
