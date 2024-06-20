@@ -6,18 +6,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatDto;
+import ru.practicum.statistic.exception.BadRequestException;
 import ru.practicum.statistic.model.EndpointHitMapper;
 import ru.practicum.statistic.model.ViewStat;
 import ru.practicum.statistic.model.ViewStatMapper;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional()
 public class StatServiceImpl implements StatService {
     private final StatRepository repository;
     private final EndpointHitMapper hitMapper;
@@ -30,10 +29,11 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public Page<ViewStatDto> getStats(String startTime, String endTime, List<String> uris, boolean unique) {
+    public Page<ViewStatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (start.isAfter(end)) {
+            throw new BadRequestException("Error! Bad params, start is after end!");
+        }
         Pageable page = Pageable.ofSize(10);
-        LocalDateTime start = toLocalDateTimeFormat(startTime);
-        LocalDateTime end = toLocalDateTimeFormat(endTime);
         return unique ? getAllUniqueViewStatList(start, end, uris, page) : getAllViewStatList(start, start, uris, page);
     }
 
@@ -47,10 +47,6 @@ public class StatServiceImpl implements StatService {
                                                        List<String> uris, Pageable page) {
         Page<ViewStat> viewStats = repository.findAllUniqueViewStatList(start, end, uris, page);
         return getViewStatDtoList(viewStats);
-    }
-
-    private LocalDateTime toLocalDateTimeFormat(String pattern) {
-        return LocalDateTime.parse(pattern, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     private Page<ViewStatDto> getViewStatDtoList(Page<ViewStat> viewStats) {
