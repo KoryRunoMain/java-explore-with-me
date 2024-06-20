@@ -1,6 +1,5 @@
 package ru.practicum.statistic;
 
-import org.springframework.data.domain.Page;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatDto;
 
@@ -11,6 +10,6 @@ public interface StatService {
 
     void addHit(EndpointHitDto hitDto);
 
-    Page<ViewStatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
+    List<ViewStatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 
 }
