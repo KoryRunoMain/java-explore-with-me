@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface StatService {
 
-    void addHit(EndpointHitDto hitDto);
+    EndpointHitDto addHit(EndpointHitDto hitDto);
 
     List<ViewStatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 

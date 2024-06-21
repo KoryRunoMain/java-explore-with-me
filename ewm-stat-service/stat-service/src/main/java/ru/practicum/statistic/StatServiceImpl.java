@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatDto;
 import ru.practicum.statistic.exception.BadRequestException;
+import ru.practicum.statistic.model.EndpointHit;
 import ru.practicum.statistic.model.EndpointHitMapper;
 import ru.practicum.statistic.model.ViewStat;
 import ru.practicum.statistic.model.ViewStatMapper;
@@ -24,8 +25,9 @@ public class StatServiceImpl implements StatService {
 
     @Transactional
     @Override
-    public void addHit(EndpointHitDto hitDto) {
-        repository.save(hitMapper.toEndpointHit(hitDto));
+    public EndpointHitDto addHit(EndpointHitDto hitDto) {
+        EndpointHit hit = repository.save(hitMapper.toEndpointHit(hitDto));
+        return hitMapper.toEndpointHitDto(hit);
     }
 
     @Override
@@ -33,20 +35,18 @@ public class StatServiceImpl implements StatService {
         if (start.isAfter(end)) {
             throw new BadRequestException("Error! Bad params, start is after end!");
         }
-        Pageable page = Pageable.ofSize(10);
-        return unique ? getAllUniqueViewStatList(start, end, uris, page) : getAllViewStatList(start, start, uris, page);
+        if (unique) {
+            return getAllUniqueViewStatList(start, end, uris, Pageable.ofSize(10));
+        }
+        return getAllViewStatList(start, end, uris, Pageable.ofSize(10));
     }
 
-    private List<ViewStatDto> getAllViewStatList(LocalDateTime start, LocalDateTime end,
-                                                 List<String> uris, Pageable page) {
-        List<ViewStat> viewStats = repository.findAllViewStatList(start, end, uris, page);
-        return getViewStatDtoList(viewStats);
+    private List<ViewStatDto> getAllViewStatList(LocalDateTime start, LocalDateTime end, List<String> uris, Pageable page) {
+        return getViewStatDtoList(repository.findAllViewStatList(start, end, uris, page));
     }
 
-    private List<ViewStatDto> getAllUniqueViewStatList(LocalDateTime start, LocalDateTime end,
-                                                       List<String> uris, Pageable page) {
-        List<ViewStat> viewStats = repository.findAllUniqueViewStatList(start, end, uris, page);
-        return getViewStatDtoList(viewStats);
+    private List<ViewStatDto> getAllUniqueViewStatList(LocalDateTime start, LocalDateTime end, List<String> uris, Pageable page) {
+        return getViewStatDtoList(repository.findAllUniqueViewStatList(start, end, uris, page));
     }
 
     private List<ViewStatDto> getViewStatDtoList(List<ViewStat> viewStats) {

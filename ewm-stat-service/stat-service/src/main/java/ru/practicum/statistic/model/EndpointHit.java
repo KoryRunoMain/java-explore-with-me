@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 public class EndpointHit {
 
     @Id
+    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

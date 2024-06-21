@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class StatClient {
@@ -27,17 +26,13 @@ public class StatClient {
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, boolean unique) {
-        String url = (uris == null) ? withoutUrisUrl : withUrisUrl;
+        String url = (uris == null || uris.isEmpty()) ? withoutUrisUrl : withUrisUrl;
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("start", start);
         parameters.put("end", end);
-        Optional.ofNullable(uris).ifPresent(u -> parameters.put("uris", u));
+        parameters.put("uris", uris);
         parameters.put("unique", unique);
-
-        ResponseEntity<Object> clientResponse = rest.getForEntity(url, Object.class, parameters);
-        return clientResponse.getStatusCode().is2xxSuccessful() ? clientResponse :
-                ResponseEntity.status(clientResponse.getStatusCode())
-                        .body(clientResponse.hasBody() ? clientResponse.getBody() : null);
+        return rest.getForEntity(url, Object.class, parameters);
     }
 
     public void addEndpointHit(EndpointHitDto hitDto) {

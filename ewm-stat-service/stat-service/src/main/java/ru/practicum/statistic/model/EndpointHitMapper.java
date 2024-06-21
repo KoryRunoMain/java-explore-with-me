@@ -20,4 +20,14 @@ public class EndpointHitMapper {
                 .build();
     }
 
+    public EndpointHitDto toEndpointHitDto(EndpointHit hit) {
+        return EndpointHitDto.builder()
+                .id(hit.getId())
+                .app(hit.getApp())
+                .uri(hit.getUri())
+                .ip(hit.getIp())
+                .timestamp(hit.getTimestamp().toString())
+                .build();
+    }
+
 }
