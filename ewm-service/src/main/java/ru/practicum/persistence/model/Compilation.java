@@ -34,6 +34,6 @@ public class Compilation {
             name = "compilation_event",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
-    public List<Event> events;
+    private List<Event> events;
 
 }

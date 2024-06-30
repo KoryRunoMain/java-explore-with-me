@@ -4,15 +4,7 @@ import lombok.*;
 import ru.practicum.api.responseDto.CategoryDto;
 import ru.practicum.common.enums.EventState;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,11 +24,11 @@ public class Event {
     private String annotation;
 
     @ManyToOne
-    @Column(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToOne
-    @Column(name = "initiator_id", nullable = false)
+    @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
 
     @Column(name = "paid", nullable = false)
@@ -55,7 +47,7 @@ public class Event {
     private LocalDateTime eventDate;
 
     @ManyToOne
-    @Column(name = "location")
+    @JoinColumn(name = "location")
     private Location location;
 
     @Column(name = "participant_limit")
@@ -73,10 +65,10 @@ public class Event {
     @Column(name = "state")
     private EventState state;
 
-    @Column(name = "views")
+    @Column(name = "views", columnDefinition = "bigint default 0")
     private Long views;
 
-    @ManyToMany(mappedBy = "event")
+    @ManyToMany(mappedBy = "events")
     private List<Compilation> compilations;
 
     @OneToMany(mappedBy = "event")

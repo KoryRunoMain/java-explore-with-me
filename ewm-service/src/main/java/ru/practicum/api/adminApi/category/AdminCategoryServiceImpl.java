@@ -1,6 +1,7 @@
 package ru.practicum.api.adminApi.category;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.practicum.common.exception.ForbiddenException;
 import ru.practicum.persistence.model.Event;
 import ru.practicum.persistence.repository.CategoryRepository;
@@ -13,6 +14,7 @@ import ru.practicum.persistence.repository.EventRepository;
 
 import javax.transaction.Transactional;
 
+@Service
 @RequiredArgsConstructor
 @Transactional
 public class AdminCategoryServiceImpl implements AdminCategoryService {

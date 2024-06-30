@@ -6,7 +6,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
-public class StatClient {
+public class StatClientRequest {
     private static final String STAT_SERVER_URL = "${stats-server.url}" + "/hit";
     private final RestTemplate restTemplate;
 

@@ -28,11 +28,11 @@ public class ParticipationRequest {
     private LocalDateTime created;
 
     @ManyToOne
-    @Column(name = "event_id")
+    @JoinColumn(name = "event_id")
     private Event event;
 
     @ManyToOne
-    @Column(name = "requester_id")
+    @JoinColumn(name = "requester_id")
     private User requester;
 
     @Column(name = "status", length = 11)
