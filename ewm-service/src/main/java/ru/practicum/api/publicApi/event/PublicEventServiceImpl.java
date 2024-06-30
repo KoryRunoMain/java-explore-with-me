@@ -37,11 +37,14 @@ public class PublicEventServiceImpl implements PublicEventService {
 
         if (onlyAvailable) {
             events = events.stream()
-                   .filter(event -> participationMapper.confirmedRequestsCounts(event.getRequests()) < event.getParticipantLimit())
+                    .filter(e -> participationMapper.confirmedRequestsCounts(e.getRequests()) < e.getParticipantLimit())
                     .collect(Collectors.toList());
         }
 
-        List<EventShortDto> shortEvents = events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());
+        List<EventShortDto> shortEvents = events.stream()
+                .map(eventMapper::toEventShortDto)
+                .collect(Collectors.toList());
+
         if (sort != null) {
             sortEvents(shortEvents, sort);
         }
@@ -51,13 +54,13 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public EventFullDto getPublicEvent(Long eventId) {
         Event event = repository.findByIdAndState(eventId, EventState.PUBLISHED)
-                .orElseThrow(() -> new NotFoundException("PUBLIC-ERROR-response: event NotFound"));
+                .orElseThrow(() -> new NotFoundException("PUBLIC-MESSAGE-response: event NotFound"));
         return eventMapper.toEeventFullDto(event);
     }
 
     private void validateDateRange(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
         if (rangeStart.isAfter(rangeEnd) && rangeEnd != null) {
-            throw new ValidationException("PUBLIC-ERROR-response: rangeStart isAfter rangeEnd or Null");
+            throw new ValidationException("PUBLIC-MESSAGE-response: rangeStart isAfter rangeEnd or Null");
         }
     }
 
@@ -70,7 +73,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                 events.sort(Comparator.comparing(EventShortDto::getViews));
                 break;
             default:
-                throw new ValidationException("PUBLIC-ERROR-response: undefined sort value");
+                throw new ValidationException("PUBLIC-MESSAGE-response: undefined sort value");
         }
     }
 

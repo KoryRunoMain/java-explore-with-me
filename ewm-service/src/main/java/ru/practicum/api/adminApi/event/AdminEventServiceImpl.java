@@ -46,7 +46,7 @@ public class AdminEventServiceImpl implements AdminEventService {
     @Override
     public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest eventAdminRequest) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("ADMIN-ERROR-response: eventId NotFound"));
+                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: eventId NotFound"));
         if (eventAdminRequest.getStateAction() != null) {
             switch (eventAdminRequest.getStateAction()) {
 
@@ -58,13 +58,13 @@ public class AdminEventServiceImpl implements AdminEventService {
 
                 case REJECT_EVENT:
                     if (event.getState() == EventState.PUBLISHED) {
-                        throw new ForbiddenException("ADMIN-ERROR-response: event is already published");
+                        throw new ForbiddenException("ADMIN-MESSAGE-response: event is already published");
                     }
                     event.setState(EventState.CANCELED);
                     break;
 
                 default:
-                    throw new InvalidStateException("ADMIN-ERROR-response: Unknown state action: " +
+                    throw new InvalidStateException("ADMIN-MESSAGE-response: Unknown state action: " +
                             eventAdminRequest.getStateAction());
             }
         }
@@ -72,7 +72,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (eventAdminRequest.getEventDate() != null) {
             LocalDateTime eventDate = LocalDateTime.parse(eventAdminRequest.getEventDate(), formatter);
             if (eventDate.isBefore(LocalDateTime.now().plusDays(2))) {
-                throw new ValidationException("ADMIN-ERROR-response: event cannot start earlier than 2 hours from now");
+                throw new ValidationException("ADMIN-MESSAGE-response: event cannot start earlier than 2 hours from now");
             }
             event.setEventDate(eventDate);
         }
@@ -84,7 +84,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (states != null) {
             states.forEach(state -> {
                 if (!isValidEventState(state)) {
-                    throw new ValidationException("ADMIN-ERROR-response: undefined state value");
+                    throw new ValidationException("ADMIN-MESSAGE-response: undefined state value");
                 }
             });
         }
@@ -101,10 +101,10 @@ public class AdminEventServiceImpl implements AdminEventService {
 
     private void validatePublishEvent(Event event) {
         if (event.getState() != EventState.PENDING) {
-            throw new ForbiddenException("ADMIN-ERROR-response: undefined state value: " + event.getState());
+            throw new ForbiddenException("ADMIN-MESSAGE-response: undefined state value: " + event.getState());
         }
         if (event.getPublishedOn() != null && event.getEventDate().isBefore(event.getPublishedOn().minusHours(1))) {
-            throw new ValidationException("Cannot publish the event because it's after 1 hour before event datetime");
+            throw new ValidationException("ADMIN-MESSAGE-response: can not publish the event earlier than 1 hour");
         }
     }
 
@@ -117,7 +117,7 @@ public class AdminEventServiceImpl implements AdminEventService {
         }
         if (eventDto.getCategory() != null) {
             event.setCategory(categoryRepository.findById(eventDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("ADMIN-ERROR-response: category NotFound")));
+                    .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: category NotFound")));
         }
         if (eventDto.getDescription() != null) {
             event.setDescription(eventDto.getDescription());

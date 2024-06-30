@@ -34,7 +34,6 @@ public class PrivateParticipationServiceImpl implements PrivateParticipationServ
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
-
     @Override
     public List<ParticipationRequestDto> getRequestsByUser(Long userId) {
         validateUserId(userId);
@@ -104,7 +103,8 @@ public class PrivateParticipationServiceImpl implements PrivateParticipationServ
 
         if (newStatus == ParticipationStatus.CONFIRMED) {
             doConfirmRequests(event, requests, resultDto);
-        } else if (newStatus == ParticipationStatus.REJECTED) {
+        }
+        else if (newStatus == ParticipationStatus.REJECTED) {
             doRejectRequests(requests, resultDto);
         }
         return resultDto;
@@ -126,8 +126,7 @@ public class PrivateParticipationServiceImpl implements PrivateParticipationServ
             throw new ForbiddenException("PRIVATE-MESSAGE-response: request event fail, event is not published yet");
         }
         if (event.getParticipantLimit() != 0
-                && repository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED)
-                >= event.getParticipantLimit()) {
+                && repository.countByEventIdAndStatus(eventId, ParticipationStatus.CONFIRMED) >= event.getParticipantLimit()) {
             throw new ForbiddenException("PRIVATE-MESSAGE-response: participant limit");
         }
     }
@@ -170,12 +169,11 @@ public class PrivateParticipationServiceImpl implements PrivateParticipationServ
     private void doRejectRequests(List<ParticipationRequest> requests, EventRequestStatusUpdateResult resultDto) {
         requests.stream()
                 .filter(request -> {
-                    if(request.getStatus() != ParticipationStatus.PENDING) {
+                    if (request.getStatus() != ParticipationStatus.PENDING) {
                         throw new ForbiddenException("PRIVATE-MESSAGE-response: status of request not PENDING");
                     }
                     return true;
                 })
-
                 .forEach(request -> {
                     request.setStatus(ParticipationStatus.REJECTED);
                     resultDto.getRejectedRequests().add(participationMapper.toParticipationRequestDto(request));

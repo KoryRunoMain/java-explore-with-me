@@ -31,7 +31,8 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
-        return compilationMapper.toCompilationDto(compilationRepository.findById(compId).orElseThrow(
-                () -> new NotFoundException("PUBLIC-ERROR-response: category NotFound")));
+        return compilationMapper.toCompilationDto(compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException("PUBLIC-MESSAGE-response: category NotFound")));
     }
+
 }

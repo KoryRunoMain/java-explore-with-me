@@ -3,7 +3,6 @@ package ru.practicum.api.privateApi.participation;
 import ru.practicum.api.requestDto.EventRequestStatusUpdateRequest;
 import ru.practicum.api.requestDto.EventRequestStatusUpdateResult;
 import ru.practicum.api.requestDto.ParticipationRequestDto;
-
 import java.util.List;
 
 public interface PrivateParticipationService {

@@ -1,11 +1,9 @@
 package ru.practicum.api.requestDto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@AllArgsConstructor
+@Data
 @Builder(toBuilder = true)
 public class ParticipationRequestDto {
 

@@ -51,14 +51,14 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         validateDate(newEventDto);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: userId NotFound"));
+                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: userId NotFound"));
         Event event = eventMapper.toEvent(newEventDto);
         event.setCreatedOn(LocalDateTime.now());
         event.setInitiator(user);
         event.setState(EventState.PENDING);
         event.setLocation(locationRepository.save(locationMapper.toLocation(newEventDto.getLocation())));
         event.setCategory(categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: category NotFound")));
+                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: category NotFound")));
         event.setViews(0L);
         return eventMapper.toEventFullDto(eventRepository.save(event));
     }
@@ -67,7 +67,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     public EventFullDto getEventByUser(Long userId, Long eventId) {
         validateUser(userId);
         return eventMapper.toEventFullDto(eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: eventID NotFound")));
+                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: eventID NotFound")));
     }
 
     @Override
@@ -89,13 +89,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     private Event getEventById(Long eventId) {
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: eventID NotFound"));
+                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: eventID NotFound"));
     }
 
     private void updateEventCategory(Event event, NewEventDto newEventDto) {
         if (newEventDto.getCategory() != null) {
             event.setCategory(categoryRepository.findById(newEventDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: category NotFound")));
+                    .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: category NotFound")));
         }
     }
 
@@ -123,19 +123,19 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     private void validateUser(Long userId) {
         eventRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-ERROR-response: userID NotFound"));
+                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: userID NotFound"));
     }
 
     private void validateDate(NewEventDto newEventDto) {
         LocalDateTime dateTime = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
         if (dateTime.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("PRIVATE-ERROR-response: event cannot start earlier than 2 hours from now");
+            throw new ValidationException("PRIVATE-MESSAGE-response: event cannot start earlier than 2 hours from now");
         }
     }
 
     private void validateEventState(Event event) {
         if (!EnumSet.of(EventState.PENDING, EventState.CANCELED).contains(event.getState())) {
-            throw new ForbiddenException("PRIVATE-ERROR-response: Only pending or canceled events can be changed");
+            throw new ForbiddenException("PRIVATE-MESSAGE-response: Only pending or canceled events can be changed");
         }
     }
 

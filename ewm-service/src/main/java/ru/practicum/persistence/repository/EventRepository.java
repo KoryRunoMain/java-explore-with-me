@@ -16,6 +16,16 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
+    Optional<Event> findByIdAndState(Long eventId, EventState state);
+
+    List<Event> findAllByInitiatorId(Long userId, PageRequest page);
+
+    Optional<Event> findFirstByCategoryId(Long catId);
+
+    List<Event> findByIdIn(List<Long> eventIds);
+
+    List<Event> findByIdAndInitiatorId(Long eventId, Long userId);
+
     @Query(value = "SELECT * FROM Event e " +
             "WHERE e.state = 'PUBLISHED' " +
             "AND (:text IS NULL OR lower(e.annotation) LIKE lower(concat('%', :text, '%')) " +
@@ -32,10 +42,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                     @Param("rangeEnd") LocalDateTime rangeEnd,
                                     Pageable pageable);
 
-    Optional<Event> findByIdAndState(Long eventId, EventState state);
-
-    List<Event> findAllByInitiatorId(Long userId, PageRequest page);
-
     @Query(value = "SELECT * FROM Event e " +
             "WHERE (:userId IS NULL OR e.initiator_id IN (:userId)) " +
             "AND (:states IS NULL OR e.state IN (:states)) " +
@@ -50,9 +56,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                      @Param("rangeEnd") LocalDateTime rangeEnd,
                                      Pageable pageable);
 
-    Optional<Event> findFirstByCategoryId(Long catId);
-
-    List<Event> findByIdIn(List<Long> eventIds);
-
-    List<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 }

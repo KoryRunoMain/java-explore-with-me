@@ -19,14 +19,16 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories(int from, int size) {
-        return categoryRepository.findAll(PageRequest.of(from/size, size)).stream()
-                .map(categoryMapper::toCategoryDto).collect(Collectors.toList());
+        return categoryRepository.findAll(PageRequest.of(from/size, size))
+                .stream()
+                .map(categoryMapper::toCategoryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public CategoryDto getCategoryById(Long catId) {
-        return categoryMapper.toCategoryDto(categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException("PUBLIC-ERROR-response: category NotFound")));
+        return categoryMapper.toCategoryDto(categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("PUBLIC-MESSAGE-response: category NotFound")));
     }
 
 }

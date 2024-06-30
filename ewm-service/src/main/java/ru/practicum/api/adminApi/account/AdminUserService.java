@@ -2,7 +2,6 @@ package ru.practicum.api.adminApi.account;
 
 import ru.practicum.api.requestDto.NewUserRequest;
 import ru.practicum.api.responseDto.UserDto;
-
 import java.util.List;
 
 public interface AdminUserService {

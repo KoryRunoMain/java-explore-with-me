@@ -1,13 +1,13 @@
 package ru.practicum.api.responseDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class CategoryDto {
 

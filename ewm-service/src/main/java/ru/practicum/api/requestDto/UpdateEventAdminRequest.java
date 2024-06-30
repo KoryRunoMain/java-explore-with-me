@@ -1,13 +1,13 @@
 package ru.practicum.api.requestDto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import ru.practicum.common.enums.AdminStateAction;
 import ru.practicum.persistence.model.Location;
-
 import javax.validation.constraints.Size;
 
-@Data
-@Builder(toBuilder = true)
+@Getter
+@AllArgsConstructor
 public class UpdateEventAdminRequest {
 
     @Size(min = 20, max = 2000)

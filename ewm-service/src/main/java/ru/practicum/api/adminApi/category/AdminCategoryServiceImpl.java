@@ -22,27 +22,26 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Override
     public CategoryDto createCategoryByAdmin(NewCategoryDto categoryDto) {
-        return categoryMapper.toCategoryDto(
-                categoryRepository.save(categoryMapper.toCategory(categoryDto)));
+        return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.toCategory(categoryDto)));
     }
 
     @Override
     public void deleteCategoryByAdmin(Long catId) {
-        categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException("ADMIN-ERROR-response: category NotFound"));
-        Event event = eventRepository.findFirstByCategoryId(catId).orElseThrow(
-                () -> new NotFoundException("ADMIN-ERROR-response: event NotFound"));
+        categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: category NotFound"));
+        Event event = eventRepository.findFirstByCategoryId(catId)
+                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: event NotFound"));
         if (event == null) {
             eventRepository.deleteById(catId);
         } else {
-            throw  new ForbiddenException("ADMIN-ERROR-response: category is NotEmpty");
+            throw  new ForbiddenException("ADMIN-MESSAGE-response: category is NotEmpty");
         }
     }
 
     @Override
     public CategoryDto updateCategoryByAdmin(Long catId, NewCategoryDto categoryDto) {
-        Category category = categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException(catId.toString()));
+        Category category = categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException(catId.toString()));
         Category newCat = categoryMapper.toCategory(categoryDto);
         newCat.setId(category.getId());
         return categoryMapper.toCategoryDto(categoryRepository.save(newCat));

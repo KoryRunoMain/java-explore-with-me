@@ -1,0 +1,62 @@
+Table account as ac {
+    id bigint [primary key]
+    email varchar [unique]
+    name varchar
+}
+
+Table category as cat {
+    id bigint [primary key]
+    name varchar(50) [unique]
+}
+
+Table event as ev {
+    id bigint [primary key]
+    annotation varchar
+    category_id bigint
+    initiator_id bigint
+    paid boolean [default: false]
+    title varchar
+    created_on timestamp
+    description varchar
+    event_date timestamp
+    location_id bigint
+    participant_limit integer [default: 0]
+    request_moderation boolean [default: true]
+    published_on timestamp
+    confirmed_requests bigint
+    state varchar
+    views bigint [default: 0]
+}
+
+Table location as loc {
+    id bigint [primary key]
+    lat float
+    lon float
+}
+
+Table compilation as comp {
+    id bigint [primary key]
+    title varchar [unique]
+    pinned boolean
+}
+
+Table compilation_event as comp_ev {
+    event_id bigint
+    compilation_id bigint
+    primary key (event_id, compilation_id)
+}
+
+Table participation as partic {
+    id bigint [primary key]
+    created timestamp
+    event_id bigint
+    requester_id bigint
+    status varchar
+}
+
+Ref: ac.id < partic.requester_id
+Ref: ac.id < ev.initiator_id
+Ref: cat.id < ev.category_id
+Ref: loc.id < ev.location_id
+Ref: comp.id < comp_ev.compilation_id
+Ref: ev.id < comp_ev.event_id

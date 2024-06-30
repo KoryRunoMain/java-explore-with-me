@@ -1,10 +1,4 @@
-DROP TABLE IF EXIST account,
-                    category,
-                    event,
-                    compilation_event,
-                    location,
-                    compilation,
-                    participation_request;
+DROP TABLE IF EXIST account, category, event, compilation_event, location, compilation, participation_request;
 
 CREATE TABLE IF NOT EXISTS account
 (

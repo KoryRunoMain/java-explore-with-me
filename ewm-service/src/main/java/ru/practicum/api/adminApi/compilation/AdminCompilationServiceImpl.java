@@ -34,19 +34,19 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
 
     @Override
     public void deleteCompilationByAdmin(Long compId) {
-        Compilation compilation = compilationRepository.findById(compId).orElseThrow(
-                () -> new NotFoundException("ADMIN-ERROR-response: compilation NotFound"));
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: compilation NotFound"));
         compilationRepository.delete(compilation);
     }
 
     @Override
     public CompilationDto updateCompilationByAdmin(Long compId, UpdateCompilationRequest compilationRequest) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException("ADMIN-ERROR-response: compilation NotFound"));
+                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: compilation NotFound"));
         if (compilationRequest.getTitle() != null) {
             String title = compilationRequest.getTitle();
             if (title.isEmpty()) {
-                throw new ValidationException("ADMIN-ERROR-response: title isEmpty");
+                throw new ValidationException("ADMIN-MESSAGE-response: title isEmpty");
             }
             compilation.setTitle(title);
         }

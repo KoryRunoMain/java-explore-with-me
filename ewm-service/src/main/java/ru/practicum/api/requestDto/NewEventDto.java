@@ -1,19 +1,24 @@
 package ru.practicum.api.requestDto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.api.responseDto.LocationDto;
 import ru.practicum.common.enums.PrivateStateAction;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 @Getter
+@Setter
 @ToString
+@EqualsAndHashCode
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class NewEventDto {
 
     @NotNull
@@ -42,7 +47,6 @@ public class NewEventDto {
     @NotBlank
     @Size(min = 3, max = 120)
     private String title;
-
 
     public NewEventDto(String annotation, Long category, String description, String eventDate, LocationDto location, PrivateStateAction stateAction, String title) {
         this.annotation = annotation;

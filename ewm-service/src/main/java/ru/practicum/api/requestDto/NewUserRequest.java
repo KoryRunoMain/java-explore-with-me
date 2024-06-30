@@ -1,9 +1,7 @@
 package ru.practicum.api.requestDto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,7 +9,6 @@ import javax.validation.constraints.Size;
 
 @Getter
 @AllArgsConstructor
-@Builder(toBuilder = true)
 public class NewUserRequest {
 
     @NotNull
