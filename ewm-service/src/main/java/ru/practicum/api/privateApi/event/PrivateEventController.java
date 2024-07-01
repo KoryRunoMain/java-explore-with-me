@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.api.requestDto.UpdateEventUserRequest;
 import ru.practicum.api.responseDto.EventFullDto;
 import ru.practicum.api.responseDto.EventShortDto;
 import ru.practicum.api.requestDto.NewEventDto;
@@ -57,7 +58,7 @@ public class PrivateEventController {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(@Validated @Positive @PathVariable Long userId,
                                     @Validated @Positive @PathVariable Long eventId,
-                                    @Validated @RequestBody NewEventDto newEvent) {
+                                    @Validated @RequestBody UpdateEventUserRequest newEvent) {
         log.info("Patch-request: updateEvent, userId={}, eventId={}, newEvent={}", userId, eventId, newEvent);
         return service.updateEventByUser(userId, eventId, newEvent);
     }

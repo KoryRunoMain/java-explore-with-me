@@ -5,14 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.api.responseDto.LocationDto;
-import ru.practicum.common.enums.AdminStateAction;
+import ru.practicum.common.enums.PrivateStateAction;
 import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder(toBuilder = true)
-public class UpdateEventAdminRequest {
+public class UpdateEventUserRequest {
 
     @Size(min = 20, max = 2000)
     private String annotation;
@@ -27,7 +27,7 @@ public class UpdateEventAdminRequest {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
-    private AdminStateAction stateAction;
+    private PrivateStateAction stateAction;
 
     @Size(min = 3, max = 120)
     private String title;

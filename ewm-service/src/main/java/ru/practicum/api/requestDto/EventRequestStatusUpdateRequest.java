@@ -1,12 +1,16 @@
 package ru.practicum.api.requestDto;
 
-import ru.practicum.common.enums.RequestStatus;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.common.enums.RequestStatus;
 import java.util.List;
 
-@Getter
+@Data
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Builder(toBuilder = true)
 public class EventRequestStatusUpdateRequest {
 
     private List<Long> requestIds;

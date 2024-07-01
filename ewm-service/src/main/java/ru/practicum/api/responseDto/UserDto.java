@@ -2,11 +2,13 @@ package ru.practicum.api.responseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Setter;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-@Setter
+@Data
+@Builder
+@RequiredArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
 public class UserDto {
 
     private String email;

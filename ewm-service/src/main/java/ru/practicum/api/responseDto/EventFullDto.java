@@ -1,13 +1,15 @@
 package ru.practicum.api.responseDto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import ru.practicum.common.enums.EventState;
 import ru.practicum.persistence.model.Location;
 
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder(toBuilder = true)
 public class EventFullDto {
 

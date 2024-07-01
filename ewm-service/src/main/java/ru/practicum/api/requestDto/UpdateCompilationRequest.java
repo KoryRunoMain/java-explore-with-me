@@ -1,12 +1,12 @@
 package ru.practicum.api.requestDto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
+@Data
+@Builder(toBuilder = true)
 public class UpdateCompilationRequest {
 
     private List<Long> events;

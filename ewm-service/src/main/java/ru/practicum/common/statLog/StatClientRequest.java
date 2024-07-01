@@ -1,17 +1,24 @@
 package ru.practicum.common.statLog;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-@RequiredArgsConstructor
 public class StatClientRequest {
-    private static final String STAT_SERVER_URL = "${stats-server.url}" + "/hit";
     private final RestTemplate restTemplate;
+    private final String statServerUrl;
 
-    public void addHit(HitDto hitDto) {
-        restTemplate.postForObject(STAT_SERVER_URL, hitDto, Void.class);
+    public StatClientRequest(RestTemplate restTemplate, @Value("${stats-server.url}") String statServerUrl) {
+        this.restTemplate = restTemplate;
+        this.statServerUrl = statServerUrl;
     }
 
+    public void addHit(HitDto hitDto) {
+        try {
+            restTemplate.postForObject(statServerUrl + "/hit", hitDto, Void.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
 }

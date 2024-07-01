@@ -4,6 +4,7 @@ import ru.practicum.api.requestDto.NewEventDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.api.requestDto.UpdateEventUserRequest;
 import ru.practicum.persistence.model.Event;
 import ru.practicum.api.responseDto.EventFullDto;
 import ru.practicum.api.responseDto.EventShortDto;
@@ -90,16 +91,16 @@ public class EventMapper {
                 .build();
     }
 
-    public void updateEventDetails(Event event, NewEventDto newEventDto) {
+    public void updateEventDetails(Event event, UpdateEventUserRequest newEventDto) {
         Optional.ofNullable(newEventDto.getTitle()).ifPresent(event::setTitle);
         Optional.ofNullable(newEventDto.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(newEventDto.getDescription()).ifPresent(event::setDescription);
-        Optional.of(newEventDto.isPaid()).ifPresent(event::setPaid);
+        Optional.of(newEventDto.getPaid()).ifPresent(event::setPaid);
         Optional.ofNullable(newEventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
-        Optional.of(newEventDto.isRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.of(newEventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
     }
 
-    public void updateEventDate(Event event, NewEventDto newEventDto) {
+    public void updateEventDate(Event event, UpdateEventUserRequest newEventDto) {
         if (newEventDto.getEventDate() != null) {
             LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
             event.setEventDate(newEventDate);

@@ -1,23 +1,16 @@
 package ru.practicum.api.requestDto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.ToString;
 import ru.practicum.api.responseDto.LocationDto;
-import ru.practicum.common.enums.PrivateStateAction;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
-@Getter
-@Setter
+@Data
 @ToString
-@EqualsAndHashCode
-@AllArgsConstructor
 @Builder(toBuilder = true)
 public class NewEventDto {
 
@@ -27,7 +20,7 @@ public class NewEventDto {
     private String annotation;
 
     @PositiveOrZero
-    private Long category;
+    private long category;
 
     @Size(min = 20, max = 7000)
     private String description;
@@ -39,16 +32,16 @@ public class NewEventDto {
     private LocationDto location;
 
     private boolean paid;
-    private Integer participantLimit;
+    private int participantLimit;
     private boolean requestModeration;
-    private PrivateStateAction stateAction;
 
     @NotNull
     @NotBlank
     @Size(min = 3, max = 120)
     private String title;
 
-    public NewEventDto(String annotation, Long category, String description, String eventDate, LocationDto location, PrivateStateAction stateAction, String title) {
+    public NewEventDto(String annotation, Long category, String description, String eventDate, LocationDto location,
+                       boolean paid, int participantLimit, boolean requestModeration, String title) {
         this.annotation = annotation;
         this.category = category;
         this.description = description;
@@ -57,7 +50,6 @@ public class NewEventDto {
         this.paid = false;
         this.participantLimit = 0;
         this.requestModeration = true;
-        this.stateAction = PrivateStateAction.CANCEL_REVIEW;
         this.title = title;
     }
 

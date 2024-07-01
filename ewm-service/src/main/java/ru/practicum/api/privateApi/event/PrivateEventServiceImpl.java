@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.api.requestDto.NewEventDto;
+import ru.practicum.api.requestDto.UpdateEventUserRequest;
 import ru.practicum.api.responseDto.EventFullDto;
 import ru.practicum.api.responseDto.EventShortDto;
 import ru.practicum.common.enums.EventState;
@@ -71,7 +72,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
-    public EventFullDto updateEventByUser(Long userId, Long eventId, NewEventDto newEventDto) {
+    public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest newEventDto) {
         validateUser(userId);
 
         Event event = getEventById(eventId);
@@ -92,14 +93,14 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: eventID NotFound"));
     }
 
-    private void updateEventCategory(Event event, NewEventDto newEventDto) {
+    private void updateEventCategory(Event event, UpdateEventUserRequest newEventDto) {
         if (newEventDto.getCategory() != null) {
             event.setCategory(categoryRepository.findById(newEventDto.getCategory())
                     .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: category NotFound")));
         }
     }
 
-    private void updateEventState(Event event, NewEventDto newEventDto) {
+    private void updateEventState(Event event, UpdateEventUserRequest newEventDto) {
         if (newEventDto.getStateAction() != null) {
             switch (newEventDto.getStateAction()) {
                 case CANCEL_REVIEW:
@@ -112,7 +113,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
     }
 
-    private void updateEventLocation(Event event, NewEventDto newEventDto) {
+    private void updateEventLocation(Event event, UpdateEventUserRequest newEventDto) {
         if (newEventDto.getLocation() != null) {
             Location location = event.getLocation();
             location.setLat(newEventDto.getLocation().getLat());
@@ -126,8 +127,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
                 .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: userID NotFound"));
     }
 
-    private void validateDate(NewEventDto newEventDto) {
-        LocalDateTime dateTime = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
+    private void validateDate(NewEventDto newEvent) {
+        LocalDateTime dateTime = LocalDateTime.parse(newEvent.getEventDate(), formatter);
+        if (dateTime.isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new ValidationException("PRIVATE-MESSAGE-response: event cannot start earlier than 2 hours from now");
+        }
+    }
+
+    private void validateDate(UpdateEventUserRequest newEvent) {
+        LocalDateTime dateTime = LocalDateTime.parse(newEvent.getEventDate(), formatter);
         if (dateTime.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ValidationException("PRIVATE-MESSAGE-response: event cannot start earlier than 2 hours from now");
         }

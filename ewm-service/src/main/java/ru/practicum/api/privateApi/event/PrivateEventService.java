@@ -1,5 +1,6 @@
 package ru.practicum.api.privateApi.event;
 
+import ru.practicum.api.requestDto.UpdateEventUserRequest;
 import ru.practicum.api.responseDto.EventFullDto;
 import ru.practicum.api.responseDto.EventShortDto;
 import ru.practicum.api.requestDto.NewEventDto;
@@ -13,6 +14,6 @@ public interface PrivateEventService {
 
     EventFullDto getEventByUser(Long userId, Long eventId);
 
-    EventFullDto updateEventByUser(Long userId, Long eventId, NewEventDto eventDto);
+    EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest eventDto);
 
 }
