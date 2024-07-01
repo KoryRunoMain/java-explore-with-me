@@ -3,6 +3,7 @@ package ru.practicum.persistence.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -19,6 +20,7 @@ import javax.validation.constraints.Size;
 @Setter
 @ToString
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "category")
 public class Category {

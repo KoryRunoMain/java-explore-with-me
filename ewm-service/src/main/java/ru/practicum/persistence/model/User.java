@@ -3,7 +3,7 @@ package ru.practicum.persistence.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -20,7 +20,7 @@ import javax.validation.constraints.Email;
 @Setter
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "account")
 public class User {

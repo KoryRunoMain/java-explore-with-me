@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import ru.practicum.api.responseDto.LocationDto;
 import ru.practicum.common.enums.PrivateStateAction;
+
+import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 
 @Data
+@ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder(toBuilder = true)
@@ -25,7 +29,10 @@ public class UpdateEventUserRequest {
     private String eventDate;
     private LocationDto location;
     private Boolean paid;
+
+    @PositiveOrZero
     private Integer participantLimit;
+
     private Boolean requestModeration;
     private PrivateStateAction stateAction;
 

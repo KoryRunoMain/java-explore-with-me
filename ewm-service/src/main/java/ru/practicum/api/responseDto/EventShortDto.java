@@ -13,12 +13,12 @@ public class EventShortDto {
 
     private String annotation;
     private CategoryDto category;
-    private Long confirmedRequests;
+    private long confirmedRequests;
     private String eventDate;
     private Long id;
     private UserShortDto initiator;
     private boolean paid;
     private String title;
-    private Long views;
+    private long views;
 
 }

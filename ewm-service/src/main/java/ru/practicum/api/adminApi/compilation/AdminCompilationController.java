@@ -15,30 +15,30 @@ import javax.validation.constraints.Positive;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/admin/compilations")
+@RequestMapping
 public class AdminCompilationController {
     private final AdminCompilationService service;
 
-    @PostMapping
+    @PostMapping(path = "/admin/compilations")
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Validated @RequestBody NewCompilationDto compilationDto) {
         log.info("Post-request: createCompilation, compilationDto={}", compilationDto);
         return service.createCompilationByAdmin(compilationDto);
     }
 
-    @DeleteMapping(path = "/{compId}")
+    @DeleteMapping(path = "/admin/compilations/{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@Validated @Positive @PathVariable Long compId) {
         log.info("Delete-request: deleteCompilation, compId={}", compId);
         service.deleteCompilationByAdmin(compId);
     }
 
-    @PatchMapping(path = "{compId}")
+    @PatchMapping(path = "/admin/compilations/{compId}")
     @ResponseStatus(HttpStatus.OK)
-    public CompilationDto updateCompilation(@Validated @RequestBody UpdateCompilationRequest compilationRequest,
-                                            @Validated @Positive @PathVariable Long comId) {
-        log.info("Patch-request: updateCompilation, compId={}, compilationDto={}", comId, compilationRequest);
-        return service.updateCompilationByAdmin(comId, compilationRequest);
+    public CompilationDto updateCompilation(@Validated @Positive @PathVariable Long compId,
+                                            @Validated @RequestBody UpdateCompilationRequest compilationRequest) {
+        log.info("Patch-request: updateCompilation, compId={}, compilationDto={}", compId, compilationRequest);
+        return service.updateCompilationByAdmin(compId, compilationRequest);
     }
 
 }

@@ -14,25 +14,25 @@ import javax.validation.constraints.Positive;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/admin/categories")
+@RequestMapping
 public class AdminCategoryController {
     private final AdminCategoryService service;
 
-    @PostMapping
+    @PostMapping(path = "/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(@Validated @RequestBody NewCategoryDto categoryDto) {
         log.info("Post-request: createCategory, name={}", categoryDto);
         return service.createCategoryByAdmin(categoryDto);
     }
 
-    @DeleteMapping(path = "/{catId}")
+    @DeleteMapping(path = "/admin/categories/{catId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@Validated @Positive @PathVariable Long catId) {
         log.info("Delete-request: deleteCategory, catId={}", catId);
         service.deleteCategoryByAdmin(catId);
     }
 
-    @PatchMapping(path = "/{catId}")
+    @PatchMapping(path = "/admin/categories/{catId}")
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(@Validated @RequestBody NewCategoryDto categoryDto,
                                       @Validated @Positive @PathVariable Long catId) {

@@ -8,6 +8,7 @@ import ru.practicum.common.exception.NotFoundException;
 import ru.practicum.common.mapper.CategoryMapper;
 import ru.practicum.persistence.repository.CategoryRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,16 +20,17 @@ public class PublicCategoryServiceImpl implements PublicCategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories(int from, int size) {
-        return categoryRepository.findAll(PageRequest.of(from/size, size))
+        List<CategoryDto> categoryDtoList = categoryRepository.findAll(PageRequest.of(from / size, size))
                 .stream()
                 .map(categoryMapper::toCategoryDto)
                 .collect(Collectors.toList());
+        return categoryDtoList.isEmpty() ? Collections.emptyList() : categoryDtoList;
     }
 
     @Override
     public CategoryDto getCategoryById(Long catId) {
         return categoryMapper.toCategoryDto(categoryRepository.findById(catId)
-                .orElseThrow(() -> new NotFoundException("PUBLIC-MESSAGE-response: category NotFound")));
+                .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found,", catId))));
     }
 
 }

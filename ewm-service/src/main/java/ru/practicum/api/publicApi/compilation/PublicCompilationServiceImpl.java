@@ -10,6 +10,7 @@ import ru.practicum.common.mapper.CompilationMapper;
 import ru.practicum.persistence.model.Compilation;
 import ru.practicum.persistence.repository.CompilationRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,18 +22,21 @@ public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     @Override
     public List<CompilationDto> getAllCompilations(Boolean pinned, int from, int size) {
-        Pageable pageable = PageRequest.of(from/size, size);
+        Pageable pageable = PageRequest.of(from / size, size);
         List<Compilation> compilations = (pinned != null)
                 ? compilationRepository.findByPinned(pinned, pageable)
                 : compilationRepository.findAll(pageable).getContent();
-        return compilations.stream()
-                .map(compilationMapper::toCompilationDto).collect(Collectors.toList());
+
+        List<CompilationDto> compilationDtoList = compilations.stream()
+                .map(compilationMapper::toCompilationDto)
+                .collect(Collectors.toList());
+        return compilationDtoList.isEmpty() ? Collections.emptyList() : compilationDtoList;
     }
 
     @Override
     public CompilationDto getCompilationById(Long compId) {
         return compilationMapper.toCompilationDto(compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException("PUBLIC-MESSAGE-response: category NotFound")));
+                .orElseThrow(() -> new NotFoundException(String.format("Compilation with id=%d was not found,", compId))));
     }
 
 }

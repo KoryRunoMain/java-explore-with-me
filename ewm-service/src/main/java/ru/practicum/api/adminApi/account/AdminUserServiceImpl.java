@@ -1,10 +1,10 @@
 package ru.practicum.api.adminApi.account;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.persistence.model.User;
 import ru.practicum.persistence.repository.UserRepository;
 import ru.practicum.api.requestDto.NewUserRequest;
 import ru.practicum.api.responseDto.UserDto;
@@ -23,17 +23,15 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public List<UserDto> getUsers(List<Long> userIds, int from, int size) {
-        int pageNumber = from / size;
-        Pageable page = PageRequest.of(pageNumber, size);
-        if (userIds != null) {
-            return getUsersWithListIds(userIds, page);
-        }
-        return getUsersWithoutListIds(page);
+        Pageable page = PageRequest.of(from / size, size);
+        return userIds != null ? getUsersWithListIds(userIds, page) : getUsersWithoutListIds(page);
     }
 
     @Override
-    public UserDto create(NewUserRequest userRequest) {
-        return mapper.toUserDto(repository.save(mapper.toUser(userRequest)));
+    public UserDto create(NewUserRequest newUserRequest) {
+        User newUser = mapper.toUser(newUserRequest);
+        repository.save(newUser);
+        return mapper.toUserDto(newUser);
     }
 
     @Override

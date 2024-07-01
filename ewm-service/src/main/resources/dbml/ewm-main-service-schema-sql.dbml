@@ -1,62 +1,54 @@
-Table account as ac {
-    id bigint [primary key]
-    email varchar [unique]
-    name varchar
+Table account {
+    id BIGINT [pk, increment]
+    email VARCHAR [unique, not null]
+    name VARCHAR [not null]
 }
 
-Table category as cat {
-    id bigint [primary key]
-    name varchar(50) [unique]
+Table category {
+    id BIGINT [pk, increment]
+    name VARCHAR(50) [unique, not null]
 }
 
-Table event as ev {
-    id bigint [primary key]
-    annotation varchar
-    category_id bigint
-    initiator_id bigint
-    paid boolean [default: false]
-    title varchar
-    created_on timestamp
-    description varchar
-    event_date timestamp
-    location_id bigint
-    participant_limit integer [default: 0]
-    request_moderation boolean [default: true]
-    published_on timestamp
-    confirmed_requests bigint
-    state varchar
-    views bigint [default: 0]
+Table location {
+    id BIGINT [pk, increment]
+    lat FLOAT [not null]
+    lon FLOAT [not null]
 }
 
-Table location as loc {
-    id bigint [primary key]
-    lat float
-    lon float
+Table event {
+    id BIGINT [pk, increment]
+    annotation VARCHAR [not null]
+    category_id BIGINT [ref: > category.id]
+    initiator_id BIGINT [ref: > account.id]
+    paid BOOLEAN [default: false]
+    title VARCHAR [not null]
+    created_on TIMESTAMP
+    description VARCHAR [not null]
+    event_date TIMESTAMP
+    location_id BIGINT [ref: > location.id]
+    participant_limit INTEGER [default: 0]
+    request_moderation BOOLEAN [default: true]
+    published_on TIMESTAMP
+    confirmed_requests BIGINT
+    state VARCHAR
+    views BIGINT [default: 0]
 }
 
-Table compilation as comp {
-    id bigint [primary key]
-    title varchar [unique]
-    pinned boolean
+Table compilation {
+    id BIGINT [pk, increment]
+    title VARCHAR(50) [unique]
+    pinned BOOLEAN
 }
 
-Table compilation_event as comp_ev {
-    event_id bigint
-    compilation_id bigint
-    primary key (event_id, compilation_id)
+Table compilation_event {
+    event_id BIGINT [ref: > event.id]
+    compilation_id BIGINT [ref: > compilation.id]
 }
 
-Table participation as partic {
-    id bigint [primary key]
-    created timestamp
-    event_id bigint
-    requester_id bigint
-    status varchar
+Table participation {
+    id BIGINT [pk, increment]
+    created TIMESTAMP
+    event_id BIGINT [ref: > event.id]
+    requester_id BIGINT [ref: > account.id]
+    status VARCHAR(30)
 }
-
-Ref: ac.id < partic.requester_id
-Ref: ac.id < ev.initiator_id
-Ref: cat.id < ev.category_id
-Ref: loc.id < ev.location_id
-Ref: comp.id < comp_ev.compilation_id
-Ref: ev.id < comp_ev.event_id

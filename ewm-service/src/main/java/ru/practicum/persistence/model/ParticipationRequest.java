@@ -3,11 +3,21 @@ package ru.practicum.persistence.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.common.enums.ParticipationStatus;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,12 +25,12 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder(toBuilder = true)
 @Table(name = "participation")
 public class ParticipationRequest {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -35,7 +45,8 @@ public class ParticipationRequest {
     @JoinColumn(name = "requester_id")
     private User requester;
 
-    @Column(name = "status", length = 11)
+    @Column(name = "status", length = 30)
+    @Enumerated(EnumType.STRING)
     private ParticipationStatus status;
 
 }

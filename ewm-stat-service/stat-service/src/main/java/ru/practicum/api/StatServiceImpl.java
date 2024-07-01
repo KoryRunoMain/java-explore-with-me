@@ -1,18 +1,19 @@
-package ru.practicum.statistic;
+package ru.practicum.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatDto;
-import ru.practicum.statistic.exception.BadRequestException;
-import ru.practicum.statistic.model.EndpointHit;
-import ru.practicum.statistic.model.EndpointHitMapper;
-import ru.practicum.statistic.model.ViewStat;
-import ru.practicum.statistic.model.ViewStatMapper;
+import ru.practicum.common.exception.ValidationRequestException;
+import ru.practicum.common.mapper.EndpointHitMapper;
+import ru.practicum.persistence.EndpointHit;
+import ru.practicum.common.mapper.ViewStatMapper;
+import ru.practicum.persistence.StatRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,7 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<ViewStatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         if (start.isAfter(end)) {
-            throw new BadRequestException("Error! Bad params, start is after end!");
+            throw new ValidationRequestException("Bad params, start is after end!");
         }
         if (unique) {
             return getAllUniqueViewStatList(start, end, uris, Pageable.ofSize(10));
@@ -50,7 +51,8 @@ public class StatServiceImpl implements StatService {
     }
 
     private List<ViewStatDto> getViewStatDtoList(List<ViewStat> viewStats) {
-        return viewStats.stream().map(statMapper::toViewStatDto).collect(Collectors.toList());
+        List<ViewStatDto> viewStat = viewStats.stream().map(statMapper::toViewStatDto).collect(Collectors.toList());
+        return viewStat.isEmpty() ? Collections.emptyList() : viewStat;
     }
 
 }

@@ -27,34 +27,41 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     @Override
     public CompilationDto createCompilationByAdmin(NewCompilationDto compilationDto) {
         Compilation compilation = compilationMapper.toCompilation(compilationDto);
-        setCompilationEvents(compilation, compilationDto.getEvents());
-        return compilationMapper.toCompilationDto(
-                compilationRepository.save(compilation));
+        if (compilationDto.getEvents() != null) {
+            setCompilationEvents(compilation, compilationDto.getEvents());
+        }
+
+        compilationRepository.save(compilation);
+        return compilationMapper.toCompilationDto(compilation);
     }
 
     @Override
     public void deleteCompilationByAdmin(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: compilation NotFound"));
+                .orElseThrow(() -> new NotFoundException(String.format("Compilation with id=%d was not found", compId)));
         compilationRepository.delete(compilation);
     }
 
     @Override
     public CompilationDto updateCompilationByAdmin(Long compId, UpdateCompilationRequest compilationRequest) {
         Compilation compilation = compilationRepository.findById(compId)
-                .orElseThrow(() -> new NotFoundException("ADMIN-MESSAGE-response: compilation NotFound"));
+                .orElseThrow(() -> new NotFoundException(String.format("Compilation with id=%d was not found", compId)));
         if (compilationRequest.getTitle() != null) {
             String title = compilationRequest.getTitle();
-            if (title.isEmpty()) {
-                throw new ValidationException("ADMIN-MESSAGE-response: title isEmpty");
+            if (title.isEmpty() || title.length() > 50) {
+                throw new ValidationException("CompilationRequest title=%d must be min=1, max=50 characters");
             }
             compilation.setTitle(title);
         }
         if (compilationRequest.getPinned() != null) {
             compilation.setPinned(compilationRequest.getPinned());
         }
-        setCompilationEvents(compilation, compilationRequest.getEvents());
-        return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
+        if (compilationRequest.getEvents() != null) {
+            setCompilationEvents(compilation, compilationRequest.getEvents());
+        }
+
+        compilationRepository.save(compilation);
+        return compilationMapper.toCompilationDto(compilation);
     }
 
     private void setCompilationEvents(Compilation compilation, List<Long> eventIds) {

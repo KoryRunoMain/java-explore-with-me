@@ -13,26 +13,27 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.api.responseDto.CompilationDto;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/compilations")
+@RequestMapping
 public class PublicCompilationController {
     private final PublicCompilationService service;
 
-    @GetMapping
+    @GetMapping(path = "/compilations")
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
-                                                @Validated @Positive @RequestParam(defaultValue = "0") int from,
-                                                @Validated @Positive @RequestParam(defaultValue = "10") int size) {
+                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("PUBLIC-GET-request, getCompilations: pinned={}, from={}, size={}", pinned, from, size);
         return service.getAllCompilations(pinned, from, size);
     }
 
-    @GetMapping(path = "/{compId}")
+    @GetMapping(path = "/compilations/{compId}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto getCompilation(@Validated @Positive @PathVariable Long compId) {
         log.info("PUBLIC-GET-request, getCompilation: compId={}", compId);

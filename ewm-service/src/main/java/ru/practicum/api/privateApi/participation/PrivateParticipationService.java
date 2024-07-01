@@ -1,8 +1,8 @@
 package ru.practicum.api.privateApi.participation;
 
 import ru.practicum.api.requestDto.EventRequestStatusUpdateRequest;
-import ru.practicum.api.requestDto.EventRequestStatusUpdateResult;
-import ru.practicum.api.requestDto.ParticipationRequestDto;
+import ru.practicum.api.responseDto.EventRequestStatusUpdateResult;
+import ru.practicum.api.responseDto.ParticipationRequestDto;
 import java.util.List;
 
 public interface PrivateParticipationService {
@@ -15,7 +15,7 @@ public interface PrivateParticipationService {
 
     List<ParticipationRequestDto> getRequestsForUserEventByUser(Long userId, Long eventId);
 
-    EventRequestStatusUpdateResult updateEventRequestStatusByUser(Long userId, Long eventId,
+    EventRequestStatusUpdateResult updateEventRequestStatus(Long userId, Long eventId,
                                                                   EventRequestStatusUpdateRequest updateRequestStatus);
 
 }

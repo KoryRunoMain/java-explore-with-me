@@ -19,34 +19,35 @@ import ru.practicum.api.responseDto.EventShortDto;
 import ru.practicum.api.requestDto.NewEventDto;
 
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/users")
+@RequestMapping
 public class PrivateEventController {
     private final PrivateEventService service;
 
-    @GetMapping(path = "/{userId}/events")
+    @GetMapping(path = "/users/{userId}/events")
     @ResponseStatus(HttpStatus.OK)
-    public List<EventShortDto> getAllEvents(@PathVariable Long userId,
-                                            @RequestParam(defaultValue = "0") int from,
-                                            @RequestParam(defaultValue = "10") int size) {
+    public List<EventShortDto> getAllEvents(@Validated @Positive @PathVariable Long userId,
+                                            @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                            @RequestParam(defaultValue = "10") @Positive int size) {
         log.info("Get-request: getUserEventByUser, userId={}, from={}, size={}", userId, from, size);
         return service.getUserEventsByUser(userId, from, size);
     }
 
-    @PostMapping(path = "/{userId}/events")
+    @PostMapping(path = "/users/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Validated @Positive @PathVariable Long userId,
-                                    @RequestBody NewEventDto newEvent) {
+                                    @Validated @RequestBody NewEventDto newEvent) {
         log.info("Post-request: createEvent, userId={}, newEvent={}", userId, newEvent);
         return service.createEventByUser(userId, newEvent);
     }
 
-    @GetMapping(path = "/{userId}/events/{eventId}")
+    @GetMapping(path = "/users/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto getEvent(@Validated @Positive @PathVariable Long userId,
                                  @Validated @Positive @PathVariable Long eventId) {
@@ -54,7 +55,7 @@ public class PrivateEventController {
         return service.getEventByUser(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}")
+    @PatchMapping("/users/{userId}/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(@Validated @Positive @PathVariable Long userId,
                                     @Validated @Positive @PathVariable Long eventId,

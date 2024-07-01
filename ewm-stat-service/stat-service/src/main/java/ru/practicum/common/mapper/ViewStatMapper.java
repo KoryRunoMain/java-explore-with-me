@@ -1,7 +1,8 @@
-package ru.practicum.statistic.model;
+package ru.practicum.common.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.ViewStatDto;
+import ru.practicum.api.ViewStat;
 
 @Component
 public class ViewStatMapper {

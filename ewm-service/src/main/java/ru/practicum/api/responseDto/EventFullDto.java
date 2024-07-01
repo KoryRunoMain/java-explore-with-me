@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import ru.practicum.common.enums.EventState;
-import ru.practicum.persistence.model.Location;
 
 @Data
 @AllArgsConstructor
@@ -21,12 +19,12 @@ public class EventFullDto {
     private String eventDate;
     private Long id;
     private UserShortDto initiator;
-    private Location location;
+    private LocationDto location;
     private boolean paid;
     private Integer participantLimit;
     private String publishedOn;
     private boolean requestModeration;
-    private EventState state;
+    private String state;
     private String title;
     private Long views;
 

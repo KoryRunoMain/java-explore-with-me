@@ -8,11 +8,13 @@ import ru.practicum.api.requestDto.UpdateEventUserRequest;
 import ru.practicum.api.responseDto.EventFullDto;
 import ru.practicum.api.responseDto.EventShortDto;
 import ru.practicum.common.enums.EventState;
+import ru.practicum.common.enums.PrivateStateAction;
 import ru.practicum.common.exception.ForbiddenException;
 import ru.practicum.common.exception.NotFoundException;
 import ru.practicum.common.exception.ValidationException;
 import ru.practicum.common.mapper.EventMapper;
 import ru.practicum.common.mapper.LocationMapper;
+import ru.practicum.persistence.model.Category;
 import ru.practicum.persistence.model.Event;
 import ru.practicum.persistence.model.Location;
 import ru.practicum.persistence.model.User;
@@ -25,7 +27,10 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,107 +48,111 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public List<EventShortDto> getUserEventsByUser(Long userId, int from, int size) {
         validateUser(userId);
-        List<Event> events = eventRepository.findAllByInitiatorId(userId, PageRequest.of(from/size, size));
-        return events.stream().map(eventMapper::toEventShortDto).collect(Collectors.toList());
+        List<Event> events = eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size));
+        return events.stream()
+                .map(eventMapper::toEventShortDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public EventFullDto createEventByUser(Long userId, NewEventDto newEventDto) {
-        validateDate(newEventDto);
-
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: userId NotFound"));
-        Event event = eventMapper.toEvent(newEventDto);
-        event.setCreatedOn(LocalDateTime.now());
-        event.setInitiator(user);
-        event.setState(EventState.PENDING);
-        event.setLocation(locationRepository.save(locationMapper.toLocation(newEventDto.getLocation())));
-        event.setCategory(categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: category NotFound")));
-        event.setViews(0L);
-        return eventMapper.toEventFullDto(eventRepository.save(event));
+                .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found,", userId)));
+        Category category = categoryRepository.findById(newEventDto.getCategory())
+                .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found,", newEventDto.getCategory())));
+        if (newEventDto.getEventDate() != null) {
+            LocalDateTime dateTime = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
+            validateDate(dateTime);
+        }
+
+        Location location = locationMapper.toLocation(newEventDto.getLocation());
+        locationRepository.save(location);
+
+        Event newEvent = eventMapper.toEvent(newEventDto);
+        newEvent.setCreatedOn(LocalDateTime.now());
+        newEvent.setInitiator(user);
+        newEvent.setState(EventState.PENDING);
+        newEvent.setLocation(location);
+        newEvent.setCategory(category);
+        newEvent.setViews(0L);
+
+        eventRepository.save(newEvent);
+        return eventMapper.toEventFullDto(newEvent);
     }
 
     @Override
     public EventFullDto getEventByUser(Long userId, Long eventId) {
         validateUser(userId);
         return eventMapper.toEventFullDto(eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: eventID NotFound")));
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId))));
     }
 
     @Override
-    public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest newEventDto) {
+    public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest eventDto) {
         validateUser(userId);
 
-        Event event = getEventById(eventId);
-        validateEventState(event);
-        validateDate(newEventDto);
-
-        eventMapper.updateEventDetails(event, newEventDto);
-        eventMapper.updateEventDate(event, newEventDto);
-        updateEventCategory(event, newEventDto);
-        updateEventLocation(event, newEventDto);
-        updateEventState(event, newEventDto);
-
-        return eventMapper.toEventFullDto(eventRepository.save(event));
-    }
-
-    private Event getEventById(Long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: eventID NotFound"));
-    }
-
-    private void updateEventCategory(Event event, UpdateEventUserRequest newEventDto) {
-        if (newEventDto.getCategory() != null) {
-            event.setCategory(categoryRepository.findById(newEventDto.getCategory())
-                    .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: category NotFound")));
+        if (eventDto.getEventDate() != null) {
+            LocalDateTime dateTime = LocalDateTime.parse(eventDto.getEventDate(), formatter);
+            validateDate(dateTime);
         }
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
+        validateEventState(event);
+
+        updateEventFields(event, eventDto);
+        Event updatedEvent = eventRepository.save(event);
+        return eventMapper.toEventFullDto(updatedEvent);
     }
 
-    private void updateEventState(Event event, UpdateEventUserRequest newEventDto) {
-        if (newEventDto.getStateAction() != null) {
-            switch (newEventDto.getStateAction()) {
-                case CANCEL_REVIEW:
-                    event.setState(EventState.CANCELED);
-                    break;
-                case SEND_TO_REVIEW:
-                    event.setState(EventState.PENDING);
-                    break;
+    private void updateEventFields(Event event, UpdateEventUserRequest eventDto) {
+        Optional.ofNullable(eventDto.getAnnotation()).ifPresent(event::setAnnotation);
+        Optional.ofNullable(eventDto.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
+
+        if (eventDto.getCategory() != null) {
+            Category category = categoryRepository.findById(eventDto.getCategory())
+                    .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", eventDto.getCategory())));
+            event.setCategory(category);
+        }
+
+        if (eventDto.getLocation() != null) {
+            Location location = event.getLocation();
+            location.setLat(eventDto.getLocation().getLat());
+            location.setLon(eventDto.getLocation().getLon());
+            event.setLocation(locationRepository.save(location));
+        }
+
+        if (eventDto.getStateAction() != null) {
+            Map<PrivateStateAction, Runnable> actions = new HashMap<>();
+
+            actions.put(PrivateStateAction.CANCEL_REVIEW, () -> event.setState(EventState.CANCELED));
+            actions.put(PrivateStateAction.SEND_TO_REVIEW, () -> event.setState(EventState.PENDING));
+
+            Runnable action = actions.get(eventDto.getStateAction());
+            if (action != null) {
+                action.run();
             }
         }
     }
 
-    private void updateEventLocation(Event event, UpdateEventUserRequest newEventDto) {
-        if (newEventDto.getLocation() != null) {
-            Location location = event.getLocation();
-            location.setLat(newEventDto.getLocation().getLat());
-            location.setLon(newEventDto.getLocation().getLon());
-            event.setLocation(locationRepository.save(location));
-        }
-    }
-
     private void validateUser(Long userId) {
-        eventRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("PRIVATE-MESSAGE-response: userID NotFound"));
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId)));
     }
 
-    private void validateDate(NewEventDto newEvent) {
-        LocalDateTime dateTime = LocalDateTime.parse(newEvent.getEventDate(), formatter);
+    private void validateDate(LocalDateTime dateTime) {
         if (dateTime.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("PRIVATE-MESSAGE-response: event cannot start earlier than 2 hours from now");
+            throw new ValidationException("Cannot start earlier than 2 hours from now");
         }
     }
 
-    private void validateDate(UpdateEventUserRequest newEvent) {
-        LocalDateTime dateTime = LocalDateTime.parse(newEvent.getEventDate(), formatter);
-        if (dateTime.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("PRIVATE-MESSAGE-response: event cannot start earlier than 2 hours from now");
-        }
-    }
-
-    private void validateEventState(Event event) {
-        if (!EnumSet.of(EventState.PENDING, EventState.CANCELED).contains(event.getState())) {
-            throw new ForbiddenException("PRIVATE-MESSAGE-response: Only pending or canceled events can be changed");
+    private void validateEventState(Event existingEvent) {
+        if (!EnumSet.of(EventState.PENDING, EventState.CANCELED).contains(existingEvent.getState())) {
+            throw new ForbiddenException("Request must have status PENDING or CANCELED");
         }
     }
 

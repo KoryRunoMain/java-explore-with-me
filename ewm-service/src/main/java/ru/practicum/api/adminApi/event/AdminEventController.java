@@ -23,11 +23,11 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "/admin/events")
+@RequestMapping
 public class AdminEventController {
     private final AdminEventService service;
 
-    @GetMapping
+    @GetMapping(path = "/admin/events")
     @ResponseStatus(HttpStatus.OK)
     public List<EventFullDto> getAllEvents(
             @RequestParam(required = false) List<Long> users,
@@ -42,7 +42,7 @@ public class AdminEventController {
         return service.getAllEventsByAdmin(users, state, categories, rangeStart, rangeEnd, from, size);
     }
 
-    @PatchMapping(path = "/{eventId}")
+    @PatchMapping(path = "/admin/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto updateEvent(@Validated @PathVariable Long eventId,
                                     @Validated @RequestBody UpdateEventAdminRequest eventAdminRequest) {
