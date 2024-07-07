@@ -1,0 +1,54 @@
+Table account {
+    id BIGINT [pk, increment]
+    email VARCHAR [unique, not null]
+    name VARCHAR [not null]
+}
+
+Table category {
+    id BIGINT [pk, increment]
+    name VARCHAR(50) [unique, not null]
+}
+
+Table location {
+    id BIGINT [pk, increment]
+    lat FLOAT [not null]
+    lon FLOAT [not null]
+}
+
+Table event {
+    id BIGINT [pk, increment]
+    annotation VARCHAR [not null]
+    category_id BIGINT [ref: > category.id]
+    initiator_id BIGINT [ref: > account.id]
+    paid BOOLEAN [default: false]
+    title VARCHAR [not null]
+    created_on TIMESTAMP
+    description VARCHAR [not null]
+    event_date TIMESTAMP
+    location_id BIGINT [ref: > location.id]
+    participant_limit INTEGER [default: 0]
+    request_moderation BOOLEAN [default: true]
+    published_on TIMESTAMP
+    confirmed_requests BIGINT
+    state VARCHAR
+    views BIGINT [default: 0]
+}
+
+Table compilation {
+    id BIGINT [pk, increment]
+    title VARCHAR(50) [unique]
+    pinned BOOLEAN
+}
+
+Table compilation_event {
+    event_id BIGINT [ref: > event.id]
+    compilation_id BIGINT [ref: > compilation.id]
+}
+
+Table participation {
+    id BIGINT [pk, increment]
+    created TIMESTAMP
+    event_id BIGINT [ref: > event.id]
+    requester_id BIGINT [ref: > account.id]
+    status VARCHAR(30)
+}
