@@ -55,6 +55,9 @@ public class PrivateParticipationServiceImpl implements PrivateParticipationServ
         if (request != null) {
             throw new ForbiddenException("Request already added");
         }
+        if (event.getInitiator() == null) {
+            throw new ForbiddenException("Event does not have initiator");
+        }
         if (event.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Initiator could not add the request to own event");
         }
