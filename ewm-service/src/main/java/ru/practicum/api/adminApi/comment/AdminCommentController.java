@@ -17,9 +17,6 @@ import ru.practicum.api.requestDto.NewCommentDto;
 import ru.practicum.api.responseDto.CommentDto;
 
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Validated
@@ -39,7 +36,7 @@ public class AdminCommentController {
     @PatchMapping(path = "/admin/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
-                                                 @Validated @Positive @RequestParam(defaultValue = "PENDING") String status) {
+                                                 @RequestParam(defaultValue = "PENDING") String status) {
         log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
         return service.updateCommentStatusByAdmin(comId, status);
     }
@@ -47,26 +44,11 @@ public class AdminCommentController {
     @PatchMapping(path = "/admin/{userId}/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateEventCommentByAdmin(@Validated @Positive @PathVariable Long userId,
-                                               @Validated @Positive @PathVariable Long comId,
-                                               @Validated @RequestBody NewCommentDto newCommentDto) {
+                                                @Validated @Positive @PathVariable Long comId,
+                                                @Validated @RequestBody NewCommentDto newCommentDto) {
         log.info("Patch-request: updateCommentByUser userId={}, comId={}, newCommentDto={}",
                 userId, comId, newCommentDto);
         return service.updateEventCommentByAdmin(userId, comId, newCommentDto);
-    }
-
-    @GetMapping(path = "/admin/search/comments")
-    @ResponseStatus(HttpStatus.OK)
-    public List<CommentDto> searchCommentByAdmin(
-            @Validated @RequestParam(required = false, defaultValue = "") String text,
-            @RequestParam(required = false) List<Long> events,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-            @RequestParam(required = false) String status,
-            @Validated @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-            @Validated @RequestParam(defaultValue = "10") @Positive int size) {
-        log.info("Get-request: searchCommentByAdmin status={}, text={}, rangeStart={}, rangeEnd={}, events={}, " +
-                "from={}, size={}", status, text, rangeStart, rangeEnd, events, from, size);
-        return service.searchCommentsByAdmin(text, events, rangeStart,rangeEnd, status, from, size);
     }
 
 }

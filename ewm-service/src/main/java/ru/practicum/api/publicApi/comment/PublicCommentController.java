@@ -22,7 +22,7 @@ import java.util.List;
 public class PublicCommentController {
     private final PublicCommentService service;
 
-    @GetMapping(path = "/comments/{eventId}")
+    @GetMapping(path = "/events/{eventId}/comments")
     public List<CommentDto> getAllEventComments(@Validated @Positive @PathVariable Long eventId,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                                 @RequestParam(defaultValue = "10") @Positive int size) {

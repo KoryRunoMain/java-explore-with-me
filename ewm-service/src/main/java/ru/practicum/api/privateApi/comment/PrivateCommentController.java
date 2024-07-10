@@ -24,7 +24,7 @@ import javax.validation.constraints.Positive;
 public class PrivateCommentController {
     private final PrivateCommentService service;
 
-    @PostMapping(path = "users/{userId}/events/{eventId}/comments")
+    @PostMapping(path = "/users/{userId}/events/{eventId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createEventCommentByUser(@Validated @Positive @PathVariable Long userId,
                                                @Validated @Positive @PathVariable Long eventId,
@@ -34,7 +34,7 @@ public class PrivateCommentController {
         return service.createEventCommentByUser(userId, eventId, newCommentDto);
     }
 
-    @PatchMapping(path = "users/{userId}/comments/{comId}")
+    @PatchMapping(path = "/users/{userId}/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateEventCommentByUser(@Validated @Positive @PathVariable Long userId,
                                                @Validated @Positive @PathVariable Long comId,
@@ -44,7 +44,7 @@ public class PrivateCommentController {
         return service.updateEventCommentByUser(userId, comId, newCommentDto);
     }
 
-    @DeleteMapping(path = "users/{userId}/comments/{comId}")
+    @DeleteMapping(path = "/users/{userId}/comments/{comId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEventCommentByUser(@Validated @Positive @PathVariable Long userId,
                                          @Validated @Positive @PathVariable Long comId) {

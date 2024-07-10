@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -17,17 +16,6 @@ import javax.validation.constraints.Size;
 @Builder(toBuilder = true)
 public class NewCommentDto {
 
-    @NotNull
-    @NotBlank
-    private Long event;
-
-    @NotNull
-    @NotBlank
-    private Long author;
-
-    private String status;
-
-    @NotNull
     @NotBlank
     @Size(min = 1, max = 1000)
     private String text;
