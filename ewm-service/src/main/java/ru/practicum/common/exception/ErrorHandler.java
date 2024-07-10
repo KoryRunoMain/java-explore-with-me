@@ -117,6 +117,18 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler(InterruptedTreadException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError interruptedExceptionHandler(InterruptedTreadException e) {
+        return new ApiError(
+                ApiStatus.CONFLICT,
+                "Interrupted because of problems with tread",
+                e.getMessage(),
+                LocalDateTime.MIN.format(formatter)
+        );
+    }
+
+
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError throwableExceptionHandle(Throwable e) {
