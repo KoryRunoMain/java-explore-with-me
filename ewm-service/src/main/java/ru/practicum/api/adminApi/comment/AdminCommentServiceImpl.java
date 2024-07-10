@@ -3,8 +3,10 @@ package ru.practicum.api.adminApi.comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.api.requestDto.NewCommentDto;
 import ru.practicum.api.responseDto.CommentDto;
 import ru.practicum.common.enums.CommentStatus;
+import ru.practicum.common.exception.ForbiddenException;
 import ru.practicum.common.exception.InterruptedTreadException;
 import ru.practicum.common.exception.NotFoundException;
 import ru.practicum.common.mapper.CommentMapper;
@@ -15,7 +17,9 @@ import ru.practicum.persistence.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,43 +28,49 @@ import java.util.stream.Collectors;
 public class AdminCommentServiceImpl implements AdminCommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final EventRepository eventRepository;
     private final CommentMapper commentMapper;
 
     @Override
-    public CommentDto updateEventCommentStatusByAdmin(Long comId, String status) {
-         Runnable runComment = () -> {
-             Comment comment = commentRepository.findById(comId)
-                     .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
-             if (status.equals(CommentStatus.APPROVED.toString())) {
-                 comment.setStatus(CommentStatus.APPROVED);
-             }
-             if (status.equals(CommentStatus.REJECTED.toString())) {
-                 comment.setStatus(CommentStatus.REJECTED);
-             }
-             if (status.equals(CommentStatus.SPAM.toString())) {
-                 comment.setStatus(CommentStatus.SPAM);
-             }
-             if (status.equals(CommentStatus.PENDING.toString())) {
-                 comment.setStatus(CommentStatus.PENDING);
-             }
-             comment.setCreated(LocalDateTime.now());
-             commentRepository.save(comment);
-         };
-
-         Thread thread = new Thread(runComment);
-         thread.start();
-
-         try {
-             thread.join();
-         } catch (InterruptedException e) {
-             Thread.currentThread().interrupt();
-             throw new InterruptedTreadException("Thread was interrupted");
-         }
-
-        Comment updatedComment = commentRepository.findById(comId)
+    public CommentDto updateCommentStatusByAdmin(Long comId, String requestStatus) {
+        Comment comment = commentRepository.findById(comId)
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
-        return commentMapper.toCommentDto(updatedComment);
+
+        Map<CommentStatus, Runnable> actions = new HashMap<>();
+        actions.put(CommentStatus.PENDING, () -> comment.setStatus(CommentStatus.PENDING));
+        actions.put(CommentStatus.APPROVED, () -> comment.setStatus(CommentStatus.APPROVED));
+        actions.put(CommentStatus.REJECTED, () -> comment.setStatus(CommentStatus.REJECTED));
+        actions.put(CommentStatus.SPAM, () -> comment.setStatus(CommentStatus.SPAM));
+        actions.put(CommentStatus.BLOCKED, () -> comment.setStatus(CommentStatus.BLOCKED));
+
+        CommentStatus commentStatus = CommentStatus.valueOf(requestStatus);
+        Runnable action = actions.get(commentStatus);
+
+        if (action != null) {
+            action.run();
+        } else {
+            throw new IllegalArgumentException(String.format("Unknown status value=%s", requestStatus));
+        }
+
+        comment.setCreated(LocalDateTime.now());
+        commentRepository.save(comment);
+        return commentMapper.toCommentDto(comment);
+    }
+
+    @Override
+    public CommentDto updateEventCommentByAdmin(Long userId, Long comId, NewCommentDto newCommentDto) {
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found,", userId)));
+        Comment comment = commentRepository.findById(comId)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
+
+        if (comment.getAuthor() == null) {
+            throw new NotFoundException("Comment does not have author");
+        }
+        comment.setText(newCommentDto.getText());
+        comment.setCreated(LocalDateTime.now());
+        comment.setStatus(CommentStatus.APPROVED);
+
+        commentRepository.save(comment);
+        return commentMapper.toCommentDto(comment);
     }
 
     @Override

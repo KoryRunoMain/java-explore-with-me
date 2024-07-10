@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface AdminCommentService {
 
-    CommentDto updateEventCommentStatusByAdmin(Long comId, String status);
-
     CommentDto getEventCommentByAdmin(Long comId);
 
-    List<CommentDto> searchCommentsByAdmin(String text, List<Long> events, LocalDateTime rangeStart, LocalDateTime rangeEnd, String status, int from, int size);
+    CommentDto updateCommentStatusByAdmin(Long comId, String status);
+
+    CommentDto updateEventCommentByAdmin(Long userId, Long comId, NewCommentDto newCommentDto);
+
+    List<CommentDto> searchCommentsByAdmin(String text, List<Long> events,
+                                           LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                           String status, int from, int size);
+
 }

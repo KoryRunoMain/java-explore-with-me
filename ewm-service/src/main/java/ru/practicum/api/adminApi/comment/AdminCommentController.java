@@ -29,31 +29,32 @@ import java.util.List;
 public class AdminCommentController {
     private final AdminCommentService service;
 
-    /*
-        TODO updateComment
-    */
-    @PatchMapping(path = "admin/comments/{comId}/")
-    @ResponseStatus(HttpStatus.OK)
-    public CommentDto updateEventCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
-                                                      @Validated @Positive @RequestParam String status) {
-        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
-        return service.updateEventCommentStatusByAdmin(comId, status);
-    }
-
-    /*
-        TODO getEventCommentById
-    */
-    @GetMapping(path = "admin/comments/{comId}")
+    @GetMapping(path = "/admin/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto getEventCommentByAdmin(@Validated @Positive @PathVariable Long comId) {
         log.info("Get-request: getEventCommentByAdmin comId={}", comId);
         return service.getEventCommentByAdmin(comId);
     }
 
-    /*
-        TODO searchCommentsByAdmin
-    */
-    @GetMapping(path = "admin/search")
+    @PatchMapping(path = "/admin/comments/{comId}/")
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
+                                                 @Validated @Positive @RequestParam String status) {
+        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
+        return service.updateCommentStatusByAdmin(comId, status);
+    }
+
+    @PatchMapping(path = "/admin/{userId}/comments/{comId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto updateEventCommentByAdmin(@Validated @Positive @PathVariable Long userId,
+                                               @Validated @Positive @PathVariable Long comId,
+                                               @Validated @RequestBody NewCommentDto newCommentDto) {
+        log.info("Patch-request: updateCommentByUser userId={}, comId={}, newCommentDto={}",
+                userId, comId, newCommentDto);
+        return service.updateEventCommentByAdmin(userId, comId, newCommentDto);
+    }
+
+    @GetMapping(path = "/admin/search/comments")
     @ResponseStatus(HttpStatus.OK)
     public List<CommentDto> searchCommentByAdmin(
             @Validated @RequestParam(required = false, defaultValue = "") String text,
