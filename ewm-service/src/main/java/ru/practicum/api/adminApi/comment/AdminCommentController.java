@@ -36,10 +36,10 @@ public class AdminCommentController {
         return service.getEventCommentByAdmin(comId);
     }
 
-    @PatchMapping(path = "/admin/comments/{comId}/")
+    @PatchMapping(path = "/admin/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
-                                                 @Validated @Positive @RequestParam String status) {
+                                                 @Validated @Positive @RequestParam(defaultValue = "PENDING") String status) {
         log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
         return service.updateCommentStatusByAdmin(comId, status);
     }
