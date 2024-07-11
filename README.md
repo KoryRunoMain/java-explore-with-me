@@ -1,4 +1,6 @@
 # java-explore-with-me
+https://github.com/KoryRunoMain/java-explore-with-me/pull/6
+
 
 ### Описание проекта
 Restfull API backend-сервис для размещения пользователями событий и участия в них.
