@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.common.enums.ApiStatus;
 import org.springframework.validation.BindException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -128,6 +129,17 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleConstraintViolationException(ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations().iterator().next().getMessage();
+        return new ApiError(
+                ApiStatus.BAD_REQUEST,
+                "Validation failed.",
+                errorMessage,
+                LocalDateTime.now().format(formatter)
+        );
+    }
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

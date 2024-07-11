@@ -55,7 +55,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
             throw new NotFoundException("Comment does not have author");
         }
         if (!comment.getAuthor().getId().equals(userId)) {
-            throw new ForbiddenException("Only author and admin can delete comment");
+            throw new ForbiddenException("Only author and admin can update comment");
         }
 
         comment.setText(newCommentDto.getText());
@@ -70,6 +70,9 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
     public void deleteEventCommentByUser(Long userId, Long comId) {
         Comment comment = commentRepository.findById(comId)
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
+        if (comment.getAuthor() == null) {
+            throw new NotFoundException("Comment does not have author");
+        }
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new ForbiddenException("Only author and admin can delete comment");
         }

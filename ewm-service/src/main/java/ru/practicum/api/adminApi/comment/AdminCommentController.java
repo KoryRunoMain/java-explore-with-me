@@ -2,7 +2,6 @@ package ru.practicum.api.adminApi.comment;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,14 +32,6 @@ public class AdminCommentController {
         return service.getEventCommentByAdmin(comId);
     }
 
-    @PatchMapping(path = "/admin/comments/{comId}")
-    @ResponseStatus(HttpStatus.OK)
-    public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
-                                                 @RequestParam(defaultValue = "PENDING") String status) {
-        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
-        return service.updateCommentStatusByAdmin(comId, status);
-    }
-
     @PatchMapping(path = "/admin/{userId}/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateEventCommentByAdmin(@Validated @Positive @PathVariable Long userId,
@@ -49,6 +40,14 @@ public class AdminCommentController {
         log.info("Patch-request: updateCommentByUser userId={}, comId={}, newCommentDto={}",
                 userId, comId, newCommentDto);
         return service.updateEventCommentByAdmin(userId, comId, newCommentDto);
+    }
+
+    @PatchMapping(path = "/admin/comments/{comId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
+                                                 @RequestParam(defaultValue = "PENDING") String status) {
+        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
+        return service.updateCommentStatusByAdmin(comId, status);
     }
 
 }
