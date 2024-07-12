@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.api.requestDto.NewCommentDto;
 import ru.practicum.api.responseDto.CommentDto;
-import ru.practicum.common.enums.CommentStatus;
 import ru.practicum.common.exception.ForbiddenException;
 import ru.practicum.common.exception.NotFoundException;
 import ru.practicum.common.mapper.CommentMapper;
@@ -16,7 +15,6 @@ import ru.practicum.persistence.repository.EventRepository;
 import ru.practicum.persistence.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -34,13 +32,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found,", eventId)));
 
-        Comment comment = new Comment();
-        comment.setEvent(event);
-        comment.setAuthor(user);
-        comment.setCreated(LocalDateTime.now());
-        comment.setStatus(CommentStatus.PENDING);
-        comment.setText(newCommentDto.getText());
-
+        Comment comment = commentMapper.toNewComment(user, event, newCommentDto);
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
@@ -58,10 +50,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
             throw new ForbiddenException("Only author and admin can update comment");
         }
 
-        comment.setText(newCommentDto.getText());
-        comment.setCreated(LocalDateTime.now());
-        comment.setStatus(CommentStatus.PENDING);
-
+        commentMapper.privateUpdateCommentFromDto(comment, newCommentDto);
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
@@ -74,7 +63,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
             throw new NotFoundException("Comment does not have author");
         }
         if (!comment.getAuthor().getId().equals(userId)) {
-            throw new ForbiddenException("Only author and admin can delete comment");
+            throw new ForbiddenException("Only author can delete comment");
         }
         commentRepository.deleteById(comId);
     }

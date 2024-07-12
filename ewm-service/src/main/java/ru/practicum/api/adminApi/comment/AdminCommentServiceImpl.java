@@ -10,20 +10,16 @@ import ru.practicum.common.exception.NotFoundException;
 import ru.practicum.common.mapper.CommentMapper;
 import ru.practicum.persistence.model.Comment;
 import ru.practicum.persistence.repository.CommentRepository;
-import ru.practicum.persistence.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class AdminCommentServiceImpl implements AdminCommentService {
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
     @Override
@@ -31,18 +27,11 @@ public class AdminCommentServiceImpl implements AdminCommentService {
         Comment comment = commentRepository.findById(comId)
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
 
-        if (requestStatus != null) {
-            Map<CommentStatus, Consumer<Comment>> actions = createActionsMap();
-            CommentStatus commentStatus = CommentStatus.valueOf(requestStatus);
-            Consumer<Comment> action = actions.get(commentStatus);
+        CommentStatus status = Optional.ofNullable(requestStatus)
+                .flatMap(CommentStatus::from)
+                .orElseThrow(() -> new InvalidStateException(String.format("Unknown status value=%s", requestStatus)));
 
-            if (action != null) {
-                action.accept(comment);
-            } else {
-                throw new InvalidStateException(String.format("Unknown status value=%s", requestStatus));
-            }
-        }
-
+        comment.setStatus(status);
         comment.setCreated(LocalDateTime.now());
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
@@ -50,17 +39,10 @@ public class AdminCommentServiceImpl implements AdminCommentService {
 
     @Override
     public CommentDto updateEventCommentByAdmin(Long userId, Long comId, NewCommentDto newCommentDto) {
-        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found,", userId)));
-        Comment comment = commentRepository.findById(comId)
-                .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
-
-        if (comment.getAuthor() == null) {
-            throw new NotFoundException("Comment does not have author");
-        }
-        comment.setText(newCommentDto.getText());
-        comment.setCreated(LocalDateTime.now());
-        comment.setStatus(CommentStatus.APPROVED);
-
+        Comment comment = commentRepository.findByIdAndAuthorId(comId, userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d and authorId=%d was not found,",
+                        comId, userId)));
+        commentMapper.adminUpdateCommentFromDto(comment, newCommentDto);
         commentRepository.save(comment);
         return commentMapper.toCommentDto(comment);
     }
@@ -70,16 +52,6 @@ public class AdminCommentServiceImpl implements AdminCommentService {
         Comment comment = commentRepository.findById(comId)
                 .orElseThrow(() -> new NotFoundException(String.format("Comment with id=%d was not found,", comId)));
         return commentMapper.toCommentDto(comment);
-    }
-
-    private Map<CommentStatus, Consumer<Comment>> createActionsMap() {
-        Map<CommentStatus, Consumer<Comment>> actions = new HashMap<>();
-        actions.put(CommentStatus.PENDING, (comment) -> comment.setStatus(CommentStatus.PENDING));
-        actions.put(CommentStatus.APPROVED, (comment) -> comment.setStatus(CommentStatus.APPROVED));
-        actions.put(CommentStatus.REJECTED, (comment) -> comment.setStatus(CommentStatus.REJECTED));
-        actions.put(CommentStatus.SPAM, (comment) -> comment.setStatus(CommentStatus.SPAM));
-        actions.put(CommentStatus.BLOCKED, (comment) -> comment.setStatus(CommentStatus.BLOCKED));
-        return actions;
     }
 
 }

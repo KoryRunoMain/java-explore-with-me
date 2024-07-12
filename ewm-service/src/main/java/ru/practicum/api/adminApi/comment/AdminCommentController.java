@@ -32,13 +32,12 @@ public class AdminCommentController {
         return service.getEventCommentByAdmin(comId);
     }
 
-    @PatchMapping(path = "/admin/{userId}/comments/{comId}")
+    @PatchMapping(path = "/admin/users/{userId}/comments/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateEventCommentByAdmin(@Validated @Positive @PathVariable Long userId,
                                                 @Validated @Positive @PathVariable Long comId,
                                                 @Validated @RequestBody NewCommentDto newCommentDto) {
-        log.info("Patch-request: updateCommentByUser userId={}, comId={}, newCommentDto={}",
-                userId, comId, newCommentDto);
+        log.info("Patch-request: updateCommentByUser comId={}, newCommentDto={}", comId, newCommentDto);
         return service.updateEventCommentByAdmin(userId, comId, newCommentDto);
     }
 
@@ -46,7 +45,7 @@ public class AdminCommentController {
     @ResponseStatus(HttpStatus.OK)
     public CommentDto updateCommentStatusByAdmin(@Validated @Positive @PathVariable Long comId,
                                                  @RequestParam(defaultValue = "PENDING") String status) {
-        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, userId={}", comId, status);
+        log.info("Patch-request: updateEventCommentStatusByAdmin comId={}, status={}", comId, status);
         return service.updateCommentStatusByAdmin(comId, status);
     }
 
