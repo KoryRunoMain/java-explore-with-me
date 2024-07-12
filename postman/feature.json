@@ -872,11 +872,12 @@
 									"\r",
 									"    try {\r",
 									"        const user = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set('uid', user.id);\r",
 									"        const category = await api.addCategory(rnd.getCategory());\r",
 									"        let event = await api.addEvent(user.id, rnd.getEvent(category.id));\r",
 									"        event = await api.publishEvent(event.id);\r",
 									"        let comment = await api.addComment(user.id, event.id, rnd.getComment());\r",
-									"        pm.collectionVariables.set('response', comment);\r",
+									"        pm.collectionVariables.set('cid', comment.id);\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 									"    }\r",
@@ -905,17 +906,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// Проверка кода статуса\r",
 									"pm.test(\"Ответ должен содержать код статуса 200\", function () {\r",
 									"    pm.response.to.have.status(200);\r",
 									"});\r",
 									"\r",
-									"// Проверка формата ответа\r",
 									"pm.test(\"Ответ должен быть в формате JSON\", function () {\r",
 									"    pm.response.to.be.json;\r",
 									"});\r",
 									"\r",
-									"// Проверка наличия всех полей в ответе\r",
 									"pm.test(\"Ответ должен содержать поля: id, event, author, created, status, text\", function () {\r",
 									"    pm.expect(pm.response.json()).to.have.property('id');\r",
 									"    pm.expect(pm.response.json()).to.have.property('event');\r",
@@ -925,9 +923,9 @@
 									"    pm.expect(pm.response.json()).to.have.property('text');\r",
 									"});\r",
 									"\r",
-									"// Проверка статуса комментария после обновления\r",
 									"pm.test(\"Статус комментария должен быть APPROVED\", function () {\r",
-									"    pm.expect(pm.response.json().status).to.equal('APPROVED');\r",
+									"    const updatedComment = pm.collectionVariables.get('updatedComment');\r",
+									"    pm.expect(updatedComment.status).to.equal('APPROVED');\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -997,19 +995,13 @@
 									"\r",
 									"    try {\r",
 									"        const user = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set('uid', user.id);\r",
 									"        const category = await api.addCategory(rnd.getCategory());\r",
 									"        let event = await api.addEvent(user.id, rnd.getEvent(category.id));\r",
 									"        event = await api.publishEvent(event.id);\r",
 									"        let comment = await api.addComment(user.id, event.id, rnd.getComment());\r",
-									"\r",
-									"        // Обновляем статус комментария\r",
-									"        const newStatus = 'APPROVED';  // Используем статус, который вы хотите установить\r",
-									"        pm.collectionVariables.set('expectedStatus', newStatus);\r",
-									"\r",
-									"        const updatedComment = await api.updateEventCommentByAdmin(comment.id, newStatus);\r",
-									"        pm.collectionVariables.set('response', updatedComment);\r",
-									"\r",
-									"    } catch (err) {\r",
+									"        pm.collectionVariables.set('cid', comment.id);\r",
+									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 									"    }\r",
 									"};\r",
@@ -1060,8 +1052,7 @@
 									"\r",
 									"pm.test(\"Статус в ответе должен соответствовать ожидаемому статусу\", function () {\r",
 									"    pm.expect(target.status).to.equal(expectedStatus, 'Полученный статус должен соответствовать обновленному статусу');\r",
-									"});\r",
-									""
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1084,7 +1075,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"text\": \"And here is the second comment, HERE WE GOUUU! now in korean: 안녕하세요!\"\r\n}",
+							"raw": "{\r\n    \"text\": \"ADMIN COMMENT\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1092,21 +1083,17 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/admin/:userId/comments/:comId",
+							"raw": "{{baseUrl}}/admin/comments/:comId/update",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"admin",
-								":userId",
 								"comments",
-								":comId"
+								":comId",
+								"update"
 							],
 							"variable": [
-								{
-									"key": "userId",
-									"value": "{{uid}}"
-								},
 								{
 									"key": "comId",
 									"value": "{{cid}}"
