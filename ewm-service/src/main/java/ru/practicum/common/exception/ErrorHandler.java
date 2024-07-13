@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.common.enums.ApiStatus;
 import org.springframework.validation.BindException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -113,6 +114,29 @@ public class ErrorHandler {
                 ApiStatus.FORBIDDEN,
                 "For the requested operation the conditions are not met.",
                 e.getMessage(),
+                LocalDateTime.now().format(formatter)
+        );
+    }
+
+    @ExceptionHandler(InterruptedTreadException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError interruptedExceptionHandler(InterruptedTreadException e) {
+        return new ApiError(
+                ApiStatus.CONFLICT,
+                "Interrupted because of problems with tread",
+                e.getMessage(),
+                LocalDateTime.MIN.format(formatter)
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleConstraintViolationException(ConstraintViolationException e) {
+        String errorMessage = e.getConstraintViolations().iterator().next().getMessage();
+        return new ApiError(
+                ApiStatus.BAD_REQUEST,
+                "Validation failed.",
+                errorMessage,
                 LocalDateTime.now().format(formatter)
         );
     }

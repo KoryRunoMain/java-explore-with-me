@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,27 +56,16 @@ public class AdminEventServiceImpl implements AdminEventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", eventId)));
 
-        if (eventAdminRequest.getStateAction() != null) {
-            Map<AdminStateAction, Runnable> actions = new HashMap<>();
 
-            actions.put(AdminStateAction.PUBLISH_EVENT, () -> {
-               validatePublishEvent(event);
-               event.setState(EventState.PUBLISHED);
-               event.setPublishedOn(LocalDateTime.now());
-            });
+        AdminStateAction state = eventAdminRequest.getStateAction();
+        if (state != null) {
+            Map<AdminStateAction, Consumer<Event>> eventActions = createEventActionsMap();
+            Consumer<Event> action = eventActions.get(eventAdminRequest.getStateAction());
 
-            actions.put(AdminStateAction.REJECT_EVENT, () -> {
-                if (event.getState() == EventState.PUBLISHED) {
-                    throw new ForbiddenException("Cannot reject, the event is already published");
-                }
-                event.setState(EventState.CANCELED);
-            });
-
-            Runnable action = actions.get(eventAdminRequest.getStateAction());
             if (action != null) {
-                action.run();
+                action.accept(event);
             } else {
-                throw new InvalidStateException("Unknown state action: " + eventAdminRequest.getStateAction());
+                throw new InvalidStateException(String.format("Unknown status value=%s", state));
             }
         }
 
@@ -141,6 +131,25 @@ public class AdminEventServiceImpl implements AdminEventService {
             event.setLocation(location);
             locationRepository.save(location);
         }
+    }
+
+    private Map<AdminStateAction, Consumer<Event>> createEventActionsMap() {
+        Map<AdminStateAction, Consumer<Event>> actions = new HashMap<>();
+
+        actions.put(AdminStateAction.PUBLISH_EVENT, (event) -> {
+            validatePublishEvent(event);
+            event.setState(EventState.PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now());
+        });
+
+        actions.put(AdminStateAction.REJECT_EVENT, (event) -> {
+            if (event.getState() == EventState.PUBLISHED) {
+                throw new ForbiddenException("Cannot reject, the event is already published");
+            }
+            event.setState(EventState.CANCELED);
+        });
+
+        return actions;
     }
 
 }
