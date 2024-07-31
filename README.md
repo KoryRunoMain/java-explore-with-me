@@ -1,5 +1,4 @@
 # java-explore-with-me
-https://github.com/KoryRunoMain/java-explore-with-me/pull/6
 
 
 ### Описание проекта
